@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reservas - O Palácio das Pedras Negras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header" aria-label="Cabeçalho das reservas do livro">
+        <span class="brand" aria-hidden="true"></span>
+        <nav class="nav-actions" aria-label="Navegação principal">
+          <a class="reserve-link" href="#reservar">Reservar</a>
+          <button class="ghost-button" id="aboutOpenButton" type="button">Sobre</button>
+          <button class="ghost-button" id="adminOpenButton" type="button">Administração</button>
+        </nav>
+      </header>
+
+      <main id="home">
+        <section class="hero-section" aria-labelledby="pageTitle">
+          <div class="hero-copy">
+            <p class="eyebrow">Exemplares físicos disponíveis</p>
+            <h1 id="pageTitle">Reserva o teu exemplar antes que este lote esgote.</h1>
+            <p class="intro">Preenche os teus dados e o livro ficará reservado a partir do lote disponível.</p>
+            <div class="availability-card" aria-live="polite">
+              <span class="metric-label">Livros disponíveis</span>
+              <strong id="availableCount">0</strong>
+              <span id="availabilityNote">A administração ainda não abriu um lote para venda.</span>
+            </div>
+          </div>
+          <div class="book-visual">
+            <div class="book-cover">
+              <img src="BookCover.jpeg" alt="Capa do livro O Palácio das Pedras Negras, de Roberto Alves" />
+            </div>
+            <div class="page-stack page-stack-one"></div>
+            <div class="page-stack page-stack-two"></div>
+          </div>
+        </section>
+
+        <section class="reservation-section" id="reservar" aria-labelledby="reserveTitle">
+          <div class="section-heading">
+            <p class="eyebrow">Formulário de reserva</p>
+            <h2 id="reserveTitle">Guardar um exemplar</h2>
+          </div>
+          <form class="reservation-form" id="reservationForm">
+            <label>
+              Nome completo
+              <input id="customerName" name="customerName" type="text" autocomplete="name" required maxlength="80" />
+            </label>
+            <label>
+              Número de telefone
+              <input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" required maxlength="30" />
+            </label>
+            <label>
+              Número de exemplares
+              <input id="copyCount" name="copyCount" type="number" min="1" step="1" required />
+            </label>
+            <button class="primary-button" type="submit">Reservar exemplar</button>
+            <p class="form-message" id="reservationMessage" role="status"></p>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="about-dialog" id="aboutDialog" aria-labelledby="aboutTitle">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Sobre o livro</p>
+          <h2 id="aboutTitle">O Palácio das Pedras Negras</h2>
+        </div>
+        <button class="icon-button" id="aboutCloseButton" type="button" aria-label="Fechar informação sobre o livro">x</button>
+      </div>
+      <div class="about-content">
+        <img src="BookCover.jpeg" alt="Capa do livro O Palácio das Pedras Negras" />
+        <div>
+          <p><strong>Autor:</strong> Roberto Alves</p>
+          <p>Roberto Alves escreve ficção emocional cinematográfica, explorando amor, silêncio, memória, tensão psicológica e os conflitos invisíveis que moldam as relações humanas.</p>
+          <p><a href="https://www.amazon.es/stores/Roberto-Alves/author/B0H1G4HTMB" target="_blank" rel="noopener noreferrer">Biografia do autor</a></p>
+          <h3>Introdução</h3>
+          <p>Um jovem pescador. Um naufrágio. Um quarto de vidro no fundo do mar.</p>
+          <p>Quando Tomás acorda submerso, alimentado por uma mão misteriosa e seduzido por uma voz que chega além das paredes, percebe que o mar não o engoliu, chamou-o.</p>
+          <p>Uma mensagem escrita em papel seco muda tudo:</p>
+          <blockquote>"Se me queres encontrar, o palácio das pedras negras deverás procurar."</blockquote>
+          <p>O que se segue é uma jornada por paisagens impossíveis, criaturas que falam e fazem pactos, transformações que custam sangue, e um monstro que guarda aquilo que o coração mais deseja.</p>
+          <p>Porque há amores que o oceano esconde. E há homens que mergulham para os encontrar.</p>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="admin-dialog" id="adminDialog" aria-labelledby="adminTitle">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Administração privada</p>
+          <h2 id="adminTitle">Inventário e reservas</h2>
+        </div>
+        <button class="icon-button" id="adminCloseButton" type="button" aria-label="Fechar menu de administração">x</button>
+      </div>
+
+      <section class="admin-panel" id="databasePanel" hidden>
+        <p class="panel-note">Configura o Firebase em <strong>config.js</strong> para ativar reservas, inventário e administração online.</p>
+      </section>
+
+      <section class="admin-panel" id="loginPanel" hidden>
+        <form id="loginForm" class="compact-form">
+          <label>
+            Email de administração
+            <input id="loginUser" type="email" autocomplete="username" required />
+          </label>
+          <label>
+            Palavra-passe de administração
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <p class="form-message" id="loginMessage" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-workspace" id="adminWorkspace" hidden>
+        <div class="admin-summary" aria-live="polite">
+          <div>
+            <span>Total de exemplares</span>
+            <strong id="adminTotalBooks">0</strong>
+          </div>
+          <div>
+            <span>Reservados</span>
+            <strong id="adminReservedBooks">0</strong>
+          </div>
+          <div>
+            <span>Disponíveis</span>
+            <strong id="adminAvailableBooks">0</strong>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <section class="admin-panel">
+            <h3>Adicionar lote para venda</h3>
+            <form id="batchForm" class="compact-form">
+              <label>
+                Nome do lote
+                <input id="batchLabel" type="text" placeholder="Lote de lançamento" maxlength="60" />
+              </label>
+              <label>
+                Exemplares neste lote
+                <input id="batchCopies" type="number" min="1" step="1" required />
+              </label>
+              <button class="primary-button" type="submit">Adicionar lote</button>
+              <p class="form-message" id="batchMessage" role="status"></p>
+            </form>
+          </section>
+
+          <section class="admin-panel">
+            <h3>Alterar acesso de administração</h3>
+            <form id="credentialsForm" class="compact-form">
+              <label>
+                Novo email de administração
+                <input id="newAdminUser" type="email" autocomplete="username" required />
+              </label>
+              <label>
+                Nova palavra-passe de administração
+                <input id="newAdminPassword" type="password" autocomplete="new-password" required minlength="6" />
+              </label>
+              <button class="secondary-button" type="submit">Atualizar acesso</button>
+              <p class="form-message" id="credentialsMessage" role="status"></p>
+            </form>
+          </section>
+        </div>
+
+        <section class="admin-panel table-panel">
+          <div class="panel-title-row">
+            <h3>Reservas</h3>
+            <button class="secondary-button" id="exportButton" type="button">Exportar CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>Exemplares</th>
+                  <th>Data</th>
+                  <th>Estado</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody id="reservationRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-panel table-panel">
+          <div class="panel-title-row">
+            <h3>Lotes para venda</h3>
+          </div>
+          <div class="batch-list" id="batchList"></div>
+        </section>
+
+        <button class="ghost-button" id="logoutButton" type="button">Terminar sessão</button>
+      </section>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
