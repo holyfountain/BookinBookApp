@@ -273,7 +273,7 @@ async function loadInstructions() {
   }
 
   try {
-    const response = await fetch("README.md?v=20260704-notification-admin");
+    const response = await fetch("README.md?v=20260704-phone-validation");
     if (!response.ok) {
       throw new Error(`README request failed with ${response.status}`);
     }
@@ -302,6 +302,11 @@ function normalisePayment(paid) {
 function normalisePhoneKey(phone) {
   const digits = phone.replace(/\D/g, "");
   return digits || phone.toLowerCase().replace(/[^a-z0-9_-]/g, "_").slice(0, 40) || "telefone";
+}
+
+function normalisePortugueseMobilePhone(phone) {
+  const digits = phone.replace(/\D/g, "");
+  return /^(91|92|93|96)\d{7}$/.test(digits) ? digits : "";
 }
 
 function getNotificationEmail() {
@@ -356,8 +361,19 @@ function sendReservationNotification({ name, phone, copies, reservationId, isUpd
 
 async function getOpenReservationByPhone(phoneKey) {
   try {
-    const snapshot = await get(ref(database, `reservationPhoneOpen/${phoneKey}`));
-    return snapshot.exists() ? snapshot.val() : null;
+    const keys = [phoneKey];
+    if (/^(91|92|93|96)\d{7}$/.test(phoneKey)) {
+      keys.push(`351${phoneKey}`);
+    }
+
+    for (const key of keys) {
+      const snapshot = await get(ref(database, `reservationPhoneOpen/${key}`));
+      if (snapshot.exists()) {
+        return { ...snapshot.val(), phoneKey: key };
+      }
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -666,7 +682,7 @@ elements.reservationForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const copies = Number(elements.copyCount.value);
   const name = elements.customerName.value.trim();
-  const phone = elements.customerPhone.value.trim();
+  const phone = normalisePortugueseMobilePhone(elements.customerPhone.value);
   const phoneKey = normalisePhoneKey(phone);
 
   if (!isConfigured) {
@@ -674,8 +690,13 @@ elements.reservationForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  if (!name || !phone || !Number.isInteger(copies) || copies < 1) {
+  if (!name || !Number.isInteger(copies) || copies < 1) {
     setMessage(elements.reservationMessage, "Introduz o nome, o telefone e um número de exemplares válido.", true);
+    return;
+  }
+
+  if (!phone) {
+    setMessage(elements.reservationMessage, "O telemóvel deve ter 9 dígitos e começar por 91, 92, 93 ou 96.", true);
     return;
   }
 
@@ -708,6 +729,9 @@ elements.reservationForm.addEventListener("submit", async (event) => {
           updatedAt: serverTimestamp()
         });
         await setOpenReservationByPhone(phoneKey, openReservation.reservationId, nextCopies);
+        if (openReservation.phoneKey && openReservation.phoneKey !== phoneKey) {
+          await remove(ref(database, `reservationPhoneOpen/${openReservation.phoneKey}`)).catch(() => {});
+        }
         sendReservationNotification({
           name,
           phone,

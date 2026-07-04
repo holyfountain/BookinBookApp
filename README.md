@@ -9,13 +9,15 @@ Página pública: [https://holyfountain.github.io/opalaciodaspedrasnegras/](http
 A aplicação permite:
 
 - mostrar ao público quantos livros ainda estão disponíveis;
-- receber reservas com nome, telefone e número de exemplares;
+- receber reservas com nome, telemóvel português válido e número de exemplares;
 - gerir lotes de livros colocados à venda;
 - acompanhar reservas, pagamentos e cancelamentos;
 - exportar reservas para CSV;
 - criar e gerir acessos de administradores.
 
 Os dados pessoais dos leitores aparecem apenas na área de administração.
+
+O telemóvel da reserva deve ter 9 dígitos e começar por 91, 92, 93 ou 96.
 
 ## Entrar como administrador
 

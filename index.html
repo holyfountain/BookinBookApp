@@ -35,14 +35,14 @@
             </div>
           </div>
           <aside class="hero-reservation" id="reservar" aria-label="Formulário de reserva">
-            <form class="reservation-form" id="reservationForm">
+            <form class="reservation-form" id="reservationForm" novalidate>
               <label>
                 Nome completo
                 <input id="customerName" name="customerName" type="text" autocomplete="name" required maxlength="80" />
               </label>
               <label>
                 Número de telefone
-                <input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" required maxlength="30" />
+                <input id="customerPhone" name="customerPhone" type="tel" autocomplete="tel" inputmode="numeric" pattern="(91|92|93|96)[0-9]{7}" maxlength="9" placeholder="912345678" title="9 dígitos, começando por 91, 92, 93 ou 96" required />
               </label>
               <label>
                 Número de exemplares
@@ -245,6 +245,6 @@
     </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="module" src="app.js?v=20260704-notification-admin"></script>
+    <script type="module" src="app.js?v=20260704-phone-validation"></script>
   </body>
 </html>
