@@ -103,11 +103,11 @@ Se a reserva anterior estiver marcada como paga, uma nova reserva com o mesmo te
 
 ## Notificações por email
 
-Sempre que uma reserva é criada ou atualizada por telefone duplicado, a aplicação envia uma notificação por email ao endereço configurado no ficheiro `config.js`.
+Sempre que uma reserva é criada ou atualizada por telefone duplicado, a aplicação envia uma notificação por email ao endereço configurado na aplicação.
 
-Atualmente, as notificações são enviadas através de EmailJS. A reserva continua guardada mesmo que o envio do email falhe temporariamente.
+As notificações são enviadas através de um serviço de email externo. A reserva continua guardada mesmo que o envio do email falhe temporariamente.
 
-Importante: criar um novo administrador não adiciona automaticamente esse email à lista de notificações. Para alterar quem recebe notificações, é necessário atualizar a configuração técnica em `config.js`.
+Importante: criar um novo administrador não altera o destinatário das notificações. As notificações continuam a ser enviadas para o endereço configurado na aplicação.
 
 ## Exportar reservas
 
@@ -134,7 +134,7 @@ Podes alterar:
 
 Se não quiseres mudar a palavra-passe, deixa esse campo vazio.
 
-Depois de alterar credenciais, guarda a nova informação num local seguro. Em alguns casos, o Firebase pode pedir que termines sessão e voltes a entrar antes de permitir alterar email ou palavra-passe.
+Depois de alterar credenciais, guarda a nova informação num local seguro. Em alguns casos, pode ser necessário terminar sessão e voltar a entrar antes de tentar alterar email ou palavra-passe.
 
 ### Novo administrador
 
@@ -184,11 +184,11 @@ Normalmente significa que não há exemplares disponíveis. Entra em **Administr
 
 ### Não consigo entrar na administração
 
-Confirma se estás a usar o email e a palavra-passe corretos. Se o problema continuar, outro administrador deve confirmar se o teu acesso existe no Firebase.
+Confirma se estás a usar o email e a palavra-passe corretos. Se o problema continuar, pede ao responsável técnico da aplicação para confirmar se o teu acesso de administração existe.
 
 ### Não consigo adicionar um administrador
 
-Confirma que estás autenticado como administrador. Se as regras da base de dados tiverem sido alteradas recentemente, confirma se o ficheiro `database.rules.json` já foi publicado no Firebase Console.
+Confirma que estás autenticado como administrador e que a palavra-passe inicial tem pelo menos 6 caracteres. Se o problema continuar, pede ao responsável técnico da aplicação para verificar as permissões da base de dados.
 
 ### Não consigo apagar um lote
 
@@ -200,4 +200,4 @@ Confirma que estás na área **Administração**. As reservas não aparecem na p
 
 ### Não recebi email de notificação
 
-Confirma se a reserva aparece na tabela. Se aparecer, a reserva foi guardada. O envio de email pode falhar por configuração EmailJS, limites do serviço ou endereço de destino incorreto em `config.js`.
+Confirma se a reserva aparece na tabela. Se aparecer, a reserva foi guardada. O envio de email pode falhar por configuração do serviço de email, limites do serviço ou endereço de destino incorreto.
