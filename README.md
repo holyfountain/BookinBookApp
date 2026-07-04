@@ -132,6 +132,15 @@ Na secção **Alterar acesso de administração**, podes atualizar:
 
 Depois de alterar credenciais, guarda a nova informação num local seguro.
 
+## Adicionar administradores
+
+Na secção **Adicionar administrador**, um admin existente pode criar outro acesso de administração com:
+
+- email do novo administrador;
+- palavra-passe inicial.
+
+Depois de criado, o novo utilizador pode entrar na área de administração com essas credenciais.
+
 ## Sair da administração
 
 Quando terminares, clica em **Terminar sessão**.

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260704-payment-badges" />
+    <link rel="stylesheet" href="styles.css?v=20260704-admin-add" />
   </head>
   <body>
     <div class="page-shell">
@@ -48,7 +48,7 @@
                 Número de exemplares
                 <input id="copyCount" name="copyCount" type="number" min="1" step="1" required />
               </label>
-              <button class="primary-button" type="submit" disabled>Reservar exemplar</button>
+              <button class="primary-button" type="submit" disabled>Reservar</button>
               <p class="form-message" id="reservationMessage" role="status"></p>
             </form>
           </aside>
@@ -157,6 +157,22 @@
               <p class="form-message" id="credentialsMessage" role="status"></p>
             </form>
           </section>
+
+          <section class="admin-panel">
+            <h3>Adicionar administrador</h3>
+            <form id="addAdminForm" class="compact-form">
+              <label>
+                Email do novo administrador
+                <input id="additionalAdminUser" type="email" autocomplete="off" required />
+              </label>
+              <label>
+                Palavra-passe inicial
+                <input id="additionalAdminPassword" type="password" autocomplete="new-password" required minlength="6" />
+              </label>
+              <button class="secondary-button" type="submit">Adicionar Administrador</button>
+              <p class="form-message" id="addAdminMessage" role="status"></p>
+            </form>
+          </section>
         </div>
 
         <section class="admin-panel table-panel">
@@ -194,6 +210,6 @@
     </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="module" src="app.js?v=20260704-email"></script>
+    <script type="module" src="app.js?v=20260704-admin-add"></script>
   </body>
 </html>

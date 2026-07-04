@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
+  createUserWithEmailAndPassword,
+  deleteUser,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -21,7 +23,7 @@ import {
   set,
   update
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-import { emailNotificationConfig, firebaseConfig } from "./config.js?v=20260704-email";
+import { emailNotificationConfig, firebaseConfig } from "./config.js?v=20260704-admin-add";
 
 const elements = {
   availableCount: document.querySelector("#availableCount"),
@@ -56,6 +58,10 @@ const elements = {
   newAdminUser: document.querySelector("#newAdminUser"),
   newAdminPassword: document.querySelector("#newAdminPassword"),
   credentialsMessage: document.querySelector("#credentialsMessage"),
+  addAdminForm: document.querySelector("#addAdminForm"),
+  additionalAdminUser: document.querySelector("#additionalAdminUser"),
+  additionalAdminPassword: document.querySelector("#additionalAdminPassword"),
+  addAdminMessage: document.querySelector("#addAdminMessage"),
   reservationRows: document.querySelector("#reservationRows"),
   batchList: document.querySelector("#batchList"),
   exportButton: document.querySelector("#exportButton"),
@@ -71,7 +77,9 @@ const isConfigured = Boolean(
 );
 
 const firebaseApp = isConfigured ? initializeApp(firebaseConfig) : null;
+const adminCreationApp = isConfigured ? initializeApp(firebaseConfig, "adminCreation") : null;
 const auth = firebaseApp ? getAuth(firebaseApp) : null;
+const adminCreationAuth = adminCreationApp ? getAuth(adminCreationApp) : null;
 const database = firebaseApp ? getDatabase(firebaseApp) : null;
 
 let currentUser = null;
@@ -624,6 +632,36 @@ elements.credentialsForm.addEventListener("submit", async (event) => {
     setMessage(elements.credentialsMessage, "Acesso de administração atualizado.");
   } catch {
     setMessage(elements.credentialsMessage, "Não foi possível atualizar o acesso. Podes ter de terminar sessão e voltar a entrar antes de alterar credenciais.", true);
+  }
+});
+
+elements.addAdminForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = elements.additionalAdminUser.value.trim();
+  const password = elements.additionalAdminPassword.value;
+
+  if (!isAdmin || !adminCreationAuth) {
+    setMessage(elements.addAdminMessage, "É necessário entrar como administrador para adicionar outro administrador.", true);
+    return;
+  }
+
+  try {
+    const credential = await createUserWithEmailAndPassword(adminCreationAuth, email, password);
+    try {
+      await set(ref(database, `admins/${credential.user.uid}`), true);
+    } catch (permissionError) {
+      await deleteUser(credential.user).catch(() => {});
+      throw permissionError;
+    }
+    await signOut(adminCreationAuth);
+    elements.addAdminForm.reset();
+    setMessage(elements.addAdminMessage, "Administrador adicionado. Pode entrar com o email e a palavra-passe definidos.");
+  } catch (error) {
+    await signOut(adminCreationAuth).catch(() => {});
+    const message = error?.code === "auth/email-already-in-use"
+      ? "Este email já existe no Firebase Authentication. Usa outro email ou adiciona o UID manualmente na consola Firebase."
+      : "Não foi possível adicionar o administrador. Confirma o email, a palavra-passe e as permissões.";
+    setMessage(elements.addAdminMessage, message, true);
   }
 });
 

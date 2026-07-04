@@ -5,7 +5,8 @@
     "admins": {
       "$uid": {
         ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
-        ".write": false
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists() && newData.val() == true",
+        ".validate": "newData.isBoolean()"
       }
     },
     "settings": {
