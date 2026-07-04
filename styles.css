@@ -427,16 +427,72 @@ input:focus {
 }
 
 .instructions-dialog {
-  width: min(860px, calc(100% - 28px));
+  width: min(1040px, calc(100% - 28px));
+}
+
+.instructions-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 240px);
+  gap: 22px;
+  max-height: min(680px, calc(100vh - 170px));
+  margin-top: 20px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .instructions-content {
   display: grid;
   gap: 12px;
-  max-height: min(680px, calc(100vh - 170px));
-  margin-top: 20px;
+  min-width: 0;
   padding-right: 8px;
+}
+
+.instructions-index {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: min(640px, calc(100vh - 190px));
+  padding: 14px;
   overflow-y: auto;
+  background: rgba(5, 7, 19, 0.5);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.instructions-index strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--gold);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.05rem;
+}
+
+.instructions-index div {
+  display: grid;
+  gap: 3px;
+}
+
+.instructions-index a {
+  display: block;
+  padding: 7px 8px;
+  color: var(--muted);
+  border-radius: 5px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.instructions-index a:hover,
+.instructions-index a:focus {
+  color: var(--ink);
+  background: rgba(141, 92, 255, 0.18);
+}
+
+.instructions-index .index-level-3 {
+  padding-left: 20px;
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .instructions-content h1,
@@ -466,6 +522,12 @@ input:focus {
 .instructions-content h3 {
   color: var(--ink);
   font-size: 1.05rem;
+}
+
+.instructions-content h1,
+.instructions-content h2,
+.instructions-content h3 {
+  scroll-margin-top: 18px;
 }
 
 .instructions-content p,
@@ -697,8 +759,15 @@ th {
   .about-content,
   .admin-grid,
   .admin-access-grid,
+  .instructions-layout,
   .admin-summary {
     grid-template-columns: 1fr;
+  }
+
+  .instructions-index {
+    position: static;
+    max-height: 220px;
+    order: -1;
   }
 
   .hero-section {

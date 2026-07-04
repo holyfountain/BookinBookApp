@@ -41,6 +41,7 @@ const elements = {
   instructionsOpenButton: document.querySelector("#instructionsOpenButton"),
   instructionsCloseButton: document.querySelector("#instructionsCloseButton"),
   instructionsContent: document.querySelector("#instructionsContent"),
+  instructionsIndex: document.querySelector("#instructionsIndex"),
   aboutDialog: document.querySelector("#aboutDialog"),
   aboutOpenButton: document.querySelector("#aboutOpenButton"),
   aboutCloseButton: document.querySelector("#aboutCloseButton"),
@@ -121,13 +122,31 @@ function renderInlineMarkdown(value) {
     .replace(/`([^`]+)`/g, "<code>$1</code>");
 }
 
+function slugifyHeading(value) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "secao";
+}
+
 function renderMarkdown(markdown) {
   const lines = markdown.split(/\r?\n/);
   const html = [];
+  const headings = [];
   let listOpen = false;
   let orderedListOpen = false;
   let codeOpen = false;
   let skippedFirstHeading = false;
+  const headingIds = new Map();
+
+  const getHeadingId = (text) => {
+    const baseId = slugifyHeading(text);
+    const count = headingIds.get(baseId) ?? 0;
+    headingIds.set(baseId, count + 1);
+    return count ? `${baseId}-${count + 1}` : baseId;
+  };
 
   const closeLists = () => {
     if (listOpen) {
@@ -164,19 +183,28 @@ function renderMarkdown(markdown) {
         skippedFirstHeading = true;
         continue;
       }
-      html.push(`<h1>${renderInlineMarkdown(line.slice(2))}</h1>`);
+      const text = line.slice(2);
+      const id = getHeadingId(text);
+      headings.push({ id, text, level: 1 });
+      html.push(`<h1 id="${id}">${renderInlineMarkdown(text)}</h1>`);
       continue;
     }
 
     if (line.startsWith("## ")) {
       closeLists();
-      html.push(`<h2>${renderInlineMarkdown(line.slice(3))}</h2>`);
+      const text = line.slice(3);
+      const id = getHeadingId(text);
+      headings.push({ id, text, level: 2 });
+      html.push(`<h2 id="${id}">${renderInlineMarkdown(text)}</h2>`);
       continue;
     }
 
     if (line.startsWith("### ")) {
       closeLists();
-      html.push(`<h3>${renderInlineMarkdown(line.slice(4))}</h3>`);
+      const text = line.slice(4);
+      const id = getHeadingId(text);
+      headings.push({ id, text, level: 3 });
+      html.push(`<h3 id="${id}">${renderInlineMarkdown(text)}</h3>`);
       continue;
     }
 
@@ -210,7 +238,24 @@ function renderMarkdown(markdown) {
     html.push("</code></pre>");
   }
 
-  return html.join("");
+  return { html: html.join(""), headings };
+}
+
+function renderInstructionsIndex(headings) {
+  if (!headings.length) {
+    elements.instructionsIndex.innerHTML = "";
+    return;
+  }
+
+  elements.instructionsIndex.innerHTML = `
+    <strong>Índice</strong>
+    <div>
+      ${headings
+        .filter((heading) => heading.level === 2 || heading.level === 3)
+        .map((heading) => `<a class="index-level-${heading.level}" href="#${heading.id}">${escapeHtml(heading.text)}</a>`)
+        .join("")}
+    </div>
+  `;
 }
 
 async function loadInstructions() {
@@ -223,10 +268,13 @@ async function loadInstructions() {
     if (!response.ok) {
       throw new Error(`README request failed with ${response.status}`);
     }
-    elements.instructionsContent.innerHTML = renderMarkdown(await response.text());
+    const instructions = renderMarkdown(await response.text());
+    elements.instructionsContent.innerHTML = instructions.html;
+    renderInstructionsIndex(instructions.headings);
     instructionsLoaded = true;
   } catch {
     elements.instructionsContent.innerHTML = "<p>Não foi possível carregar as instruções. Abre o ficheiro README.md no repositório.</p>";
+    elements.instructionsIndex.innerHTML = "";
   }
 }
 

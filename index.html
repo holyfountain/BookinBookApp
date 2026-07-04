@@ -227,12 +227,15 @@
         </div>
         <button class="icon-button" id="instructionsCloseButton" type="button" aria-label="Fechar instruções">x</button>
       </div>
-      <article class="instructions-content" id="instructionsContent" aria-live="polite">
-        A carregar instruções...
-      </article>
+      <div class="instructions-layout">
+        <article class="instructions-content" id="instructionsContent" aria-live="polite">
+          A carregar instruções...
+        </article>
+        <nav class="instructions-index" id="instructionsIndex" aria-label="Índice das instruções"></nav>
+      </div>
     </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="module" src="app.js?v=20260704-instructions"></script>
+    <script type="module" src="app.js?v=20260704-instructions-index"></script>
   </body>
 </html>
