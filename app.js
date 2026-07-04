@@ -109,6 +109,90 @@ function normaliseStatus(status) {
   return status === "active" ? "ativa" : "cancelada";
 }
 
+function normalisePayment(paid) {
+  return paid ? "paga" : "não paga";
+}
+
+function normalisePhoneKey(phone) {
+  const digits = phone.replace(/\D/g, "");
+  return digits || phone.toLowerCase().replace(/[^a-z0-9_-]/g, "_").slice(0, 40) || "telefone";
+}
+
+async function getOpenReservationByPhone(phoneKey) {
+  try {
+    const snapshot = await get(ref(database, `reservationPhoneOpen/${phoneKey}`));
+    return snapshot.exists() ? snapshot.val() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function setOpenReservationByPhone(phoneKey, reservationId, copies) {
+  try {
+    await set(ref(database, `reservationPhoneOpen/${phoneKey}`), {
+      reservationId,
+      copies,
+      updatedAt: serverTimestamp()
+    });
+  } catch {
+    // Keep the reservation flow usable if the helper index is temporarily unavailable.
+  }
+}
+
+async function removeOpenReservationByPhone(phoneKey, reservationId) {
+  if (!phoneKey) {
+    return;
+  }
+
+  try {
+    const openReservation = await getOpenReservationByPhone(phoneKey);
+    if (openReservation?.reservationId === reservationId) {
+      await remove(ref(database, `reservationPhoneOpen/${phoneKey}`));
+    }
+  } catch {
+    // Duplicate detection is a helper index; reservation state remains authoritative.
+  }
+}
+
+async function reserveCopies(copies) {
+  const inventoryRef = ref(database, "settings/inventory");
+  let shouldReserveCopies = false;
+
+  const transactionResult = await runTransaction(inventoryRef, (currentInventory) => {
+    const data = currentInventory ?? { totalCopies: 0, reservedCopies: 0 };
+    const totalCopies = Number(data.totalCopies ?? 0);
+    const reservedCopies = Number(data.reservedCopies ?? 0);
+    const availableCopies = totalCopies - reservedCopies;
+
+    if (copies > availableCopies) {
+      return;
+    }
+
+    shouldReserveCopies = true;
+    return {
+      ...data,
+      totalCopies,
+      reservedCopies: reservedCopies + copies,
+      updatedAt: serverTimestamp()
+    };
+  });
+
+  if (!transactionResult.committed || !shouldReserveCopies) {
+    throw new Error("insufficient_inventory");
+  }
+}
+
+async function releaseCopies(copies) {
+  await runTransaction(ref(database, "settings/inventory"), (currentInventory) => {
+    const data = currentInventory ?? { totalCopies: 0, reservedCopies: 0 };
+    return {
+      ...data,
+      reservedCopies: Math.max(Number(data.reservedCopies ?? 0) - copies, 0),
+      updatedAt: serverTimestamp()
+    };
+  });
+}
+
 function listFromSnapshot(snapshot) {
   const value = snapshot.val() ?? {};
   return Object.entries(value)
@@ -160,7 +244,7 @@ function renderAdminWorkspace() {
 
 function renderReservations() {
   if (reservations.length === 0) {
-    elements.reservationRows.innerHTML = `<tr><td colspan="6">Ainda não existem reservas.</td></tr>`;
+    elements.reservationRows.innerHTML = `<tr><td colspan="7">Ainda não existem reservas.</td></tr>`;
     return;
   }
 
@@ -172,10 +256,16 @@ function renderReservations() {
         <td>${reservation.copies}</td>
         <td>${formatDate(reservation.createdAt)}</td>
         <td>${normaliseStatus(reservation.status)}</td>
+        <td>${normalisePayment(Boolean(reservation.paid))}</td>
         <td>
-          <button class="secondary-button" type="button" data-reservation-id="${reservation.id}">
-            ${reservation.status === "active" ? "Cancelar" : "Repor"}
-          </button>
+          <div class="reservation-actions">
+            <button class="secondary-button" type="button" data-status-id="${reservation.id}">
+              ${reservation.status === "active" ? "Cancelar" : "Repor"}
+            </button>
+            <button class="secondary-button" type="button" data-payment-id="${reservation.id}">
+              ${reservation.paid ? "Não Pago" : "Pago"}
+            </button>
+          </div>
         </td>
       </tr>
     `)
@@ -285,6 +375,7 @@ elements.reservationForm.addEventListener("submit", async (event) => {
   const copies = Number(elements.copyCount.value);
   const name = elements.customerName.value.trim();
   const phone = elements.customerPhone.value.trim();
+  const phoneKey = normalisePhoneKey(phone);
 
   if (!isConfigured) {
     setMessage(elements.reservationMessage, "Configura primeiro o Firebase em config.js.", true);
@@ -302,50 +393,54 @@ elements.reservationForm.addEventListener("submit", async (event) => {
   }
 
   try {
-    const reservationRef = push(ref(database, "reservations"));
-    const inventoryRef = ref(database, "settings/inventory");
-    let shouldCreateReservation = false;
+    const openReservation = await getOpenReservationByPhone(phoneKey);
 
-    const transactionResult = await runTransaction(inventoryRef, (currentInventory) => {
-      const data = currentInventory ?? { totalCopies: 0, reservedCopies: 0 };
-      const totalCopies = Number(data.totalCopies ?? 0);
-      const reservedCopies = Number(data.reservedCopies ?? 0);
-      const availableCopies = totalCopies - reservedCopies;
+    if (openReservation?.reservationId) {
+      const currentCopies = Number(openReservation.copies ?? 0);
+      const nextCopies = currentCopies + copies;
+      const shouldIncrement = confirm(`Já existe uma reserva não paga com este número de telefone. Queres acrescentar ${copies} exemplar${copies === 1 ? "" : "es"} a essa reserva, ficando com ${nextCopies} no total?`);
 
-      if (copies > availableCopies) {
+      if (!shouldIncrement) {
+        setMessage(elements.reservationMessage, "A reserva não foi alterada.", true);
         return;
       }
 
-      shouldCreateReservation = true;
-      return {
-        ...data,
-        totalCopies,
-        reservedCopies: reservedCopies + copies,
-        updatedAt: serverTimestamp()
-      };
-    });
+      await reserveCopies(copies);
 
-    if (!transactionResult.committed || !shouldCreateReservation) {
-      throw new Error("insufficient_inventory");
+      try {
+        await update(ref(database, `reservations/${openReservation.reservationId}`), {
+          name: name.slice(0, 80),
+          phone: phone.slice(0, 30),
+          phoneKey,
+          copies: nextCopies,
+          updatedAt: serverTimestamp()
+        });
+        await setOpenReservationByPhone(phoneKey, openReservation.reservationId, nextCopies);
+        elements.reservationForm.reset();
+        setMessage(elements.reservationMessage, "Reserva atualizada. Os exemplares foram acrescentados à reserva existente.");
+        return;
+      } catch {
+        await releaseCopies(copies);
+        await removeOpenReservationByPhone(phoneKey, openReservation.reservationId);
+      }
     }
 
+    await reserveCopies(copies);
+
     try {
+      const reservationRef = push(ref(database, "reservations"));
       await set(reservationRef, {
         name: name.slice(0, 80),
         phone: phone.slice(0, 30),
+        phoneKey,
         copies,
         status: "active",
+        paid: false,
         createdAt: serverTimestamp()
       });
+      await setOpenReservationByPhone(phoneKey, reservationRef.key, copies);
     } catch (reservationError) {
-      await runTransaction(inventoryRef, (currentInventory) => {
-        const data = currentInventory ?? { totalCopies: 0, reservedCopies: 0 };
-        return {
-          ...data,
-          reservedCopies: Math.max(Number(data.reservedCopies ?? 0) - copies, 0),
-          updatedAt: serverTimestamp()
-        };
-      });
+      await releaseCopies(copies);
       throw reservationError;
     }
 
@@ -479,12 +574,43 @@ elements.credentialsForm.addEventListener("submit", async (event) => {
 });
 
 elements.reservationRows.addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-reservation-id]");
+  const statusButton = event.target.closest("button[data-status-id]");
+  const paymentButton = event.target.closest("button[data-payment-id]");
+
+  if (paymentButton) {
+    const reservation = reservations.find((item) => item.id === paymentButton.dataset.paymentId);
+    if (!reservation) {
+      return;
+    }
+
+    const nextPaid = !reservation.paid;
+
+    try {
+      await update(ref(database, `reservations/${reservation.id}`), {
+        paid: nextPaid,
+        paidAt: nextPaid ? serverTimestamp() : null,
+        updatedAt: serverTimestamp()
+      });
+
+      const phoneKey = reservation.phoneKey ?? normalisePhoneKey(reservation.phone ?? "");
+      if (nextPaid || reservation.status !== "active") {
+        await removeOpenReservationByPhone(phoneKey, reservation.id);
+      } else {
+        await setOpenReservationByPhone(phoneKey, reservation.id, Number(reservation.copies ?? 0));
+      }
+    } catch {
+      setMessage(elements.loginMessage, "Não foi possível atualizar o estado de pagamento.", true);
+    }
+
+    return;
+  }
+
+  const button = statusButton;
   if (!button) {
     return;
   }
 
-  const reservation = reservations.find((item) => item.id === button.dataset.reservationId);
+  const reservation = reservations.find((item) => item.id === button.dataset.statusId);
   if (!reservation) {
     return;
   }
@@ -517,6 +643,12 @@ elements.reservationRows.addEventListener("click", async (event) => {
 
     try {
       await update(ref(database, `reservations/${reservation.id}`), { status: nextStatus });
+      const phoneKey = reservation.phoneKey ?? normalisePhoneKey(reservation.phone ?? "");
+      if (nextStatus === "active" && !reservation.paid) {
+        await setOpenReservationByPhone(phoneKey, reservation.id, Number(reservation.copies ?? 0));
+      } else {
+        await removeOpenReservationByPhone(phoneKey, reservation.id);
+      }
     } catch (reservationError) {
       await runTransaction(inventoryRef, (currentInventory) => {
         const data = currentInventory ?? { totalCopies: 0, reservedCopies: 0 };
@@ -593,13 +725,14 @@ elements.batchList.addEventListener("click", async (event) => {
 });
 
 elements.exportButton.addEventListener("click", () => {
-  const rows = [["Nome", "Telefone", "Exemplares", "Data", "Estado"]].concat(
+  const rows = [["Nome", "Telefone", "Exemplares", "Data", "Estado", "Pagamento"]].concat(
     reservations.map((reservation) => [
       reservation.name,
       reservation.phone,
       reservation.copies,
       formatDate(reservation.createdAt),
-      normaliseStatus(reservation.status)
+      normaliseStatus(reservation.status),
+      normalisePayment(Boolean(reservation.paid))
     ])
   );
   const csv = rows.map((row) => row.map(toCsvCell).join(",")).join("\n");

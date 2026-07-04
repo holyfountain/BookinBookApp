@@ -75,8 +75,28 @@ Na secção **Reservas**, o admin consegue ver:
 - número de exemplares reservados;
 - data da reserva;
 - estado da reserva.
+- estado de pagamento.
 
 Os dados pessoais dos leitores só aparecem na área de administração. Não são públicos.
+
+## Controlar pagamentos
+
+Cada reserva pode ser marcada como:
+
+- **paga**;
+- **não paga**.
+
+Usa o botão **Marcar paga** quando o pagamento estiver confirmado. Se precisares corrigir, usa **Marcar não paga**.
+
+Quando uma reserva está marcada como paga, uma nova reserva com o mesmo telefone cria uma nova encomenda separada, identificada pela nova data e hora.
+
+## Reservas duplicadas pelo telefone
+
+A aplicação usa o número de telefone para detetar reservas duplicadas.
+
+Se um leitor fizer uma nova reserva com um telefone que já tem uma reserva ativa e não paga, a página mostra um aviso e pergunta se deve acrescentar os novos exemplares à reserva existente.
+
+Se a reserva anterior já estiver paga, a aplicação cria uma nova reserva separada.
 
 ## Cancelar ou repor uma reserva
 

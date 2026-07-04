@@ -22,11 +22,18 @@
         ".validate": "!newData.exists() || (newData.hasChildren(['label', 'copies', 'createdAt', 'createdBy']) && newData.child('label').isString() && newData.child('label').val().length > 0 && newData.child('label').val().length <= 60 && newData.child('copies').isNumber() && newData.child('copies').val() > 0 && newData.child('createdBy').val() == auth.uid)"
       }
     },
+    "reservationPhoneOpen": {
+      "$phoneKey": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || (newData.hasChildren(['reservationId', 'copies']) && newData.child('reservationId').isString() && newData.child('copies').isNumber() && newData.child('copies').val() > 0 && newData.child('copies').val() <= 200)"
+      }
+    },
     "reservations": {
       ".read": "auth != null && root.child('admins').child(auth.uid).exists()",
       "$reservationId": {
-        ".write": "(!data.exists() && newData.exists() && newData.hasChildren(['name', 'phone', 'copies', 'status', 'createdAt']) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('phone').isString() && newData.child('phone').val().length > 0 && newData.child('phone').val().length <= 30 && newData.child('copies').isNumber() && newData.child('copies').val() > 0 && newData.child('copies').val() <= 20 && newData.child('status').val() == 'active') || (auth != null && root.child('admins').child(auth.uid).exists())",
-        ".validate": "!newData.exists() || (newData.hasChildren(['name', 'phone', 'copies', 'status', 'createdAt']) && newData.child('status').val().matches(/^(active|cancelled)$/))"
+        ".write": "((!data.exists() && newData.exists() && newData.hasChildren(['name', 'phone', 'phoneKey', 'copies', 'status', 'paid', 'createdAt']) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('phone').isString() && newData.child('phone').val().length > 0 && newData.child('phone').val().length <= 30 && newData.child('phoneKey').isString() && newData.child('phoneKey').val().length > 0 && newData.child('phoneKey').val().length <= 40 && newData.child('copies').isNumber() && newData.child('copies').val() > 0 && newData.child('copies').val() <= 20 && newData.child('status').val() == 'active' && newData.child('paid').val() == false) || (data.exists() && newData.exists() && data.child('status').val() == 'active' && data.child('paid').val() == false && newData.child('status').val() == 'active' && newData.child('paid').val() == false && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 80 && newData.child('phone').isString() && newData.child('phone').val().length > 0 && newData.child('phone').val().length <= 30 && newData.child('phoneKey').val() == data.child('phoneKey').val() && newData.child('copies').isNumber() && newData.child('copies').val() > data.child('copies').val() && newData.child('copies').val() <= data.child('copies').val() + 20)) || (auth != null && root.child('admins').child(auth.uid).exists())",
+        ".validate": "!newData.exists() || (newData.hasChildren(['name', 'phone', 'copies', 'status', 'createdAt']) && newData.child('status').val().matches(/^(active|cancelled)$/) && (!newData.child('paid').exists() || newData.child('paid').isBoolean()))"
       }
     }
   }
