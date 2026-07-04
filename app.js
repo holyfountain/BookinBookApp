@@ -255,7 +255,7 @@ function renderReservations() {
         <td>${escapeHtml(reservation.phone)}</td>
         <td>${reservation.copies}</td>
         <td>${formatDate(reservation.createdAt)}</td>
-        <td>${normaliseStatus(reservation.status)}</td>
+        <td><span class="status-badge ${reservation.status === "active" ? "status-active" : "status-cancelled"}">${normaliseStatus(reservation.status)}</span></td>
         <td>${normalisePayment(Boolean(reservation.paid))}</td>
         <td>
           <div class="reservation-actions">
