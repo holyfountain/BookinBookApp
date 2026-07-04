@@ -1,119 +1,119 @@
-# Instruções para administração das reservas
+# Guia de administração das reservas
 
-Este guia explica como usar a versão online da página de reservas do livro **O Palácio das Pedras Negras**, de Roberto Alves.
+Este guia explica como usar a aplicação de reservas do livro **O Palácio das Pedras Negras**, de Roberto Alves.
 
-**Página pública:** https://holyfountain.github.io/opalaciodaspedrasnegras/
-
-## Link da página online
-
-A página pública oficial de reservas está publicada em:
+Página pública:
 
 ```txt
 https://holyfountain.github.io/opalaciodaspedrasnegras/
 ```
 
-Este é o link que pode ser enviado aos leitores para reservarem exemplares. A página está alojada em GitHub Pages e fica acessível publicamente por HTTPS.
+## Visão geral
 
-## O que os leitores podem fazer
+A aplicação permite:
 
-Na página pública, cada leitor pode:
+- mostrar ao público quantos livros ainda estão disponíveis;
+- receber reservas com nome, telefone e número de exemplares;
+- gerir lotes de livros colocados à venda;
+- acompanhar reservas, pagamentos e cancelamentos;
+- exportar reservas para CSV;
+- criar e gerir acessos de administradores.
 
-1. Ver quantos exemplares ainda estão disponíveis.
-2. Ler a informação sobre o livro e o autor.
-3. Preencher uma reserva com:
-   - nome completo;
-   - número de telefone;
-   - número de exemplares.
+Os dados pessoais dos leitores aparecem apenas na área de administração.
 
-Quando não houver exemplares disponíveis, o botão de reserva fica desativado.
+## Entrar como administrador
 
-## Entrar na administração
-
-1. Abre a página online.
+1. Abre a página pública.
 2. Clica em **Administração** no topo da página.
-3. Introduz o email e a palavra-passe de administração.
+3. Escreve o email e a palavra-passe de administração.
 4. Clica em **Entrar**.
 
-A área de administração mostra:
+Depois de entrar, o painel mostra:
 
 - total de exemplares colocados à venda;
 - número de exemplares reservados;
-- número de exemplares ainda disponíveis;
-- lista de reservas;
+- número de exemplares disponíveis;
+- ferramentas para adicionar lotes e gerir administradores;
+- tabela de reservas;
 - lista de lotes para venda.
 
-## Adicionar exemplares para venda
+## Adicionar livros para venda
 
-Os exemplares são adicionados por lotes.
+Os livros são adicionados por lotes.
 
-1. Entra em **Administração**.
+1. Entra na área **Administração**.
 2. Na secção **Adicionar lote para venda**, escreve o nome do lote.
-   - Exemplo: `Lote de lançamento`.
 3. Escreve o número de exemplares desse lote.
 4. Clica em **Adicionar lote**.
 
-Depois de adicionar o lote, o número de livros disponíveis na página pública é atualizado automaticamente.
+Exemplo de nome de lote: `Lote de lançamento`.
+
+O total de livros disponíveis na página pública é atualizado automaticamente.
 
 ## Apagar um lote
 
-Na secção **Lotes para venda**, cada lote tem o seu próprio botão **Apagar**.
+Na secção **Lotes para venda**, cada lote tem o botão **Apagar**.
 
 Ao apagar um lote:
 
 1. A aplicação pede confirmação.
-2. O total de exemplares é reduzido pelo número de exemplares desse lote.
+2. O total de exemplares é reduzido pelo número de exemplares do lote.
 3. O lote desaparece da lista.
 
-Se existirem reservas ativas que dependam desses exemplares, a aplicação impede a eliminação do lote.
+Se existirem reservas ativas que dependam desse stock, a aplicação impede a eliminação. Nesse caso, cancela primeiro as reservas necessárias ou mantém o lote ativo.
 
-## Ver reservas
+## Ler a tabela de reservas
 
-Na secção **Reservas**, o admin consegue ver:
+Na secção **Reservas**, cada linha mostra:
 
-- nome do leitor;
-- telefone;
-- número de exemplares reservados;
-- data da reserva;
-- estado da reserva.
-- estado de pagamento.
+- **Nome**: nome do leitor;
+- **Telefone**: contacto usado na reserva;
+- **Exemplares**: quantidade reservada;
+- **Data**: data e hora da reserva;
+- **Estado**: `ativa` ou `cancelada`;
+- **Pagamento**: `paga` ou `não paga`;
+- **Ação**: botões para cancelar/repor e alterar pagamento.
 
-Os dados pessoais dos leitores só aparecem na área de administração. Não são públicos.
+As etiquetas de estado e pagamento são destacadas por cor para facilitar a leitura.
 
-## Notificações por email
+## Confirmar pagamentos
 
-Quando uma reserva é criada, ou quando uma reserva não paga é atualizada por telefone duplicado, a aplicação envia uma notificação por email ao admin configurado em `config.js`.
+Quando receberes o pagamento de uma reserva:
 
-O envio usa EmailJS, tal como na app da rifa. A reserva fica guardada mesmo que o envio do email falhe temporariamente.
+1. Entra em **Administração**.
+2. Na tabela **Reservas**, encontra a linha da pessoa.
+3. Clica em **Pago**.
 
-## Controlar pagamentos
+A etiqueta de pagamento passa para `paga` e o botão muda para **Não Pago**.
 
-Cada reserva pode ser marcada como:
+Se precisares corrigir um erro, clica em **Não Pago** para voltar a marcar a reserva como não paga.
 
-- **paga**;
-- **não paga**.
+## Cancelar ou repor reservas
 
-Usa o botão **Pago** quando o pagamento estiver confirmado. Se precisares corrigir, usa **Não Pago**.
+Usa estes botões na coluna **Ação**:
 
-Quando uma reserva está marcada como paga, uma nova reserva com o mesmo telefone cria uma nova encomenda separada, identificada pela nova data e hora.
+- **Cancelar**: cancela uma reserva ativa e devolve os exemplares ao stock disponível.
+- **Repor**: reativa uma reserva cancelada, se ainda houver stock suficiente.
+
+Usa **Cancelar** quando uma pessoa desistir, quando a reserva for duplicada por engano ou quando a encomenda já não deve contar para o stock.
 
 ## Reservas duplicadas pelo telefone
 
-A aplicação usa o número de telefone para detetar reservas duplicadas.
+A aplicação usa o número de telefone para evitar reservas duplicadas.
 
-Se um leitor fizer uma nova reserva com um telefone que já tem uma reserva ativa e não paga, a página mostra um aviso e pergunta se deve acrescentar os novos exemplares à reserva existente.
+Se um leitor fizer uma nova reserva com um telefone que já tem uma reserva ativa e não paga, a página pergunta se deve acrescentar os novos exemplares à reserva existente.
 
-Se a reserva anterior já estiver paga, a aplicação cria uma nova reserva separada.
+Se a reserva anterior estiver marcada como paga, uma nova reserva com o mesmo telefone cria uma encomenda separada.
 
-## Cancelar ou repor uma reserva
+## Notificações por email
 
-Cada reserva tem um botão de ação:
+Sempre que uma reserva é criada ou atualizada por telefone duplicado, a aplicação envia uma notificação por email ao endereço configurado no ficheiro `config.js`.
 
-- **Cancelar**: cancela uma reserva ativa e devolve os exemplares ao stock disponível.
-- **Repor**: volta a ativar uma reserva cancelada, se houver stock suficiente.
+Atualmente, as notificações são enviadas através de EmailJS. A reserva continua guardada mesmo que o envio do email falhe temporariamente.
 
-Usa **Cancelar** quando uma pessoa desistir da reserva ou quando a reserva já não deve contar para o stock.
+Importante: criar um novo administrador não adiciona automaticamente esse email à lista de notificações. Para alterar quem recebe notificações, é necessário atualizar a configuração técnica em `config.js`.
 
-## Exportar reservas para CSV
+## Exportar reservas
 
 Para guardar uma cópia das reservas:
 
@@ -121,53 +121,87 @@ Para guardar uma cópia das reservas:
 2. Vai à secção **Reservas**.
 3. Clica em **Exportar CSV**.
 
-O ficheiro descarregado pode ser aberto em Excel, Google Sheets ou outra folha de cálculo.
+O ficheiro pode ser aberto em Excel, Google Sheets ou outra folha de cálculo.
 
 ## Gerir administradores
 
-Na secção **Administradores**, podes gerir acessos sem sair do painel.
+Na secção **Administradores**, existem duas áreas.
 
-Em **O meu acesso**, podes atualizar:
+### O meu acesso
 
-- o email de administração;
-- a palavra-passe de administração, se preencheres o campo de nova palavra-passe.
+Usa esta área para alterar o acesso do administrador atualmente autenticado.
 
-Depois de alterar credenciais, guarda a nova informação num local seguro.
+Podes alterar:
 
-Em **Novo administrador**, um admin existente pode criar outro acesso com:
+- o email atual;
+- a palavra-passe, preenchendo o campo **Nova palavra-passe**.
 
-- email do novo administrador;
-- palavra-passe inicial.
+Se não quiseres mudar a palavra-passe, deixa esse campo vazio.
 
-Depois de criado, o novo utilizador pode entrar na área de administração com essas credenciais.
+Depois de alterar credenciais, guarda a nova informação num local seguro. Em alguns casos, o Firebase pode pedir que termines sessão e voltes a entrar antes de permitir alterar email ou palavra-passe.
+
+### Novo administrador
+
+Usa esta área para criar outro acesso de administração.
+
+1. Escreve o email do novo administrador.
+2. Define uma palavra-passe inicial com pelo menos 6 caracteres.
+3. Clica em **Adicionar Administrador**.
+
+Depois de criado, o novo administrador pode entrar pela mesma opção **Administração** da página pública.
 
 ## Sair da administração
 
 Quando terminares, clica em **Terminar sessão**.
 
-Isto é especialmente importante se estiveres a usar um computador partilhado.
+Faz isto sempre que estiveres num computador partilhado.
+
+## Rotina recomendada
+
+Antes de divulgar o link:
+
+1. Entra em **Administração**.
+2. Confirma que existe pelo menos um lote ativo com exemplares disponíveis.
+3. Confirma que o contador público mostra os livros disponíveis.
+4. Faz uma reserva de teste, confirma se aparece na tabela e cancela-a de seguida.
+
+Durante a venda:
+
+1. Verifica regularmente novas reservas.
+2. Marca como **Pago** quando receberes o pagamento.
+3. Cancela reservas inválidas ou desistências.
+4. Exporta CSV quando precisares de uma cópia de trabalho.
 
 ## Regras importantes
 
-- Não partilhes a palavra-passe de administração com leitores.
+- Não partilhes palavras-passe de administração com leitores.
+- Cria um acesso separado para cada administrador.
 - Não publiques capturas de ecrã com nomes ou telefones de leitores.
-- Antes de divulgar o link, confirma que existe pelo menos um lote ativo com exemplares disponíveis.
+- Mantém o link público apenas para reservas; a gestão deve ser feita só por admins.
 - Se o stock chegar a zero, a página continua visível, mas novas reservas ficam bloqueadas.
 
 ## Problemas comuns
 
-### O botão de reserva está desativado
+### O botão Reservar está desativado
 
-Isto acontece quando não há exemplares disponíveis. Entra na administração e adiciona um novo lote.
+Normalmente significa que não há exemplares disponíveis. Entra em **Administração** e adiciona um novo lote.
 
 ### Não consigo entrar na administração
 
-Confirma se estás a usar o email e a palavra-passe corretos. Se o problema continuar, pode ser necessário verificar o utilizador no Firebase Authentication.
+Confirma se estás a usar o email e a palavra-passe corretos. Se o problema continuar, outro administrador deve confirmar se o teu acesso existe no Firebase.
 
-### Apagar lote não funciona
+### Não consigo adicionar um administrador
 
-Se houver reservas ativas associadas ao stock atual, primeiro cancela as reservas necessárias. Depois tenta apagar o lote novamente.
+Confirma que estás autenticado como administrador. Se as regras da base de dados tiverem sido alteradas recentemente, confirma se o ficheiro `database.rules.json` já foi publicado no Firebase Console.
 
-### As reservas não aparecem
+### Não consigo apagar um lote
 
-Confirma que estás dentro da área de administração. As reservas não aparecem na página pública por motivos de privacidade.
+Se houver reservas ativas que dependam desse stock, a aplicação bloqueia a eliminação. Cancela primeiro as reservas necessárias ou mantém o lote.
+
+### Uma reserva não aparece
+
+Confirma que estás na área **Administração**. As reservas não aparecem na página pública por motivos de privacidade.
+
+### Não recebi email de notificação
+
+Confirma se a reserva aparece na tabela. Se aparecer, a reserva foi guardada. O envio de email pode falhar por configuração EmailJS, limites do serviço ou endereço de destino incorreto em `config.js`.
