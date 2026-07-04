@@ -87,7 +87,10 @@
           <p class="eyebrow">Administração privada</p>
           <h2 id="adminTitle">Inventário e reservas</h2>
         </div>
-        <button class="icon-button" id="adminCloseButton" type="button" aria-label="Fechar menu de administração">x</button>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="instructionsOpenButton" type="button">Instruções</button>
+          <button class="icon-button" id="adminCloseButton" type="button" aria-label="Fechar menu de administração">x</button>
+        </div>
       </div>
 
       <section class="admin-panel" id="databasePanel" hidden>
@@ -216,7 +219,20 @@
       </section>
     </dialog>
 
+    <dialog class="instructions-dialog" id="instructionsDialog" aria-labelledby="instructionsTitle">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Guia de utilização</p>
+          <h2 id="instructionsTitle">Instruções para administradores</h2>
+        </div>
+        <button class="icon-button" id="instructionsCloseButton" type="button" aria-label="Fechar instruções">x</button>
+      </div>
+      <article class="instructions-content" id="instructionsContent" aria-live="polite">
+        A carregar instruções...
+      </article>
+    </dialog>
+
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="module" src="app.js?v=20260704-admin-simple"></script>
+    <script type="module" src="app.js?v=20260704-instructions"></script>
   </body>
 </html>

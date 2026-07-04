@@ -37,6 +37,10 @@ const elements = {
   adminDialog: document.querySelector("#adminDialog"),
   adminOpenButton: document.querySelector("#adminOpenButton"),
   adminCloseButton: document.querySelector("#adminCloseButton"),
+  instructionsDialog: document.querySelector("#instructionsDialog"),
+  instructionsOpenButton: document.querySelector("#instructionsOpenButton"),
+  instructionsCloseButton: document.querySelector("#instructionsCloseButton"),
+  instructionsContent: document.querySelector("#instructionsContent"),
   aboutDialog: document.querySelector("#aboutDialog"),
   aboutOpenButton: document.querySelector("#aboutOpenButton"),
   aboutCloseButton: document.querySelector("#aboutCloseButton"),
@@ -88,6 +92,7 @@ let inventory = { totalCopies: 0, reservedCopies: 0, availableCopies: 0 };
 let batches = [];
 let reservations = [];
 let emailNotificationsReady = false;
+let instructionsLoaded = false;
 
 function setMessage(element, message, isError = false) {
   element.textContent = message;
@@ -108,6 +113,121 @@ function escapeHtml(value) {
     ">": "&gt;",
     "\"": "&quot;"
   })[character]);
+}
+
+function renderInlineMarkdown(value) {
+  return escapeHtml(value)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+function renderMarkdown(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  const html = [];
+  let listOpen = false;
+  let orderedListOpen = false;
+  let codeOpen = false;
+  let skippedFirstHeading = false;
+
+  const closeLists = () => {
+    if (listOpen) {
+      html.push("</ul>");
+      listOpen = false;
+    }
+    if (orderedListOpen) {
+      html.push("</ol>");
+      orderedListOpen = false;
+    }
+  };
+
+  for (const line of lines) {
+    if (line.startsWith("```")) {
+      closeLists();
+      html.push(codeOpen ? "</code></pre>" : "<pre><code>");
+      codeOpen = !codeOpen;
+      continue;
+    }
+
+    if (codeOpen) {
+      html.push(`${escapeHtml(line)}\n`);
+      continue;
+    }
+
+    if (!line.trim()) {
+      closeLists();
+      continue;
+    }
+
+    if (line.startsWith("# ")) {
+      closeLists();
+      if (!skippedFirstHeading) {
+        skippedFirstHeading = true;
+        continue;
+      }
+      html.push(`<h1>${renderInlineMarkdown(line.slice(2))}</h1>`);
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      closeLists();
+      html.push(`<h2>${renderInlineMarkdown(line.slice(3))}</h2>`);
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      closeLists();
+      html.push(`<h3>${renderInlineMarkdown(line.slice(4))}</h3>`);
+      continue;
+    }
+
+    if (line.startsWith("- ")) {
+      if (!listOpen) {
+        closeLists();
+        html.push("<ul>");
+        listOpen = true;
+      }
+      html.push(`<li>${renderInlineMarkdown(line.slice(2))}</li>`);
+      continue;
+    }
+
+    const orderedMatch = line.match(/^\d+\.\s(.+)$/);
+    if (orderedMatch) {
+      if (!orderedListOpen) {
+        closeLists();
+        html.push("<ol>");
+        orderedListOpen = true;
+      }
+      html.push(`<li>${renderInlineMarkdown(orderedMatch[1])}</li>`);
+      continue;
+    }
+
+    closeLists();
+    html.push(`<p>${renderInlineMarkdown(line)}</p>`);
+  }
+
+  closeLists();
+  if (codeOpen) {
+    html.push("</code></pre>");
+  }
+
+  return html.join("");
+}
+
+async function loadInstructions() {
+  if (instructionsLoaded) {
+    return;
+  }
+
+  try {
+    const response = await fetch("README.md?v=20260704-instructions");
+    if (!response.ok) {
+      throw new Error(`README request failed with ${response.status}`);
+    }
+    elements.instructionsContent.innerHTML = renderMarkdown(await response.text());
+    instructionsLoaded = true;
+  } catch {
+    elements.instructionsContent.innerHTML = "<p>Não foi possível carregar as instruções. Abre o ficheiro README.md no repositório.</p>";
+  }
 }
 
 function toCsvCell(value) {
@@ -532,6 +652,15 @@ elements.adminOpenButton.addEventListener("click", () => {
 
 elements.adminCloseButton.addEventListener("click", () => {
   elements.adminDialog.close();
+});
+
+elements.instructionsOpenButton.addEventListener("click", async () => {
+  elements.instructionsDialog.showModal();
+  await loadInstructions();
+});
+
+elements.instructionsCloseButton.addEventListener("click", () => {
+  elements.instructionsDialog.close();
 });
 
 elements.loginForm.addEventListener("submit", async (event) => {
