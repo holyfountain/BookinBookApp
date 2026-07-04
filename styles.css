@@ -451,11 +451,45 @@ input:focus {
 }
 
 .admin-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1.22fr);
 }
 
 .admin-panel {
   padding: 20px;
+}
+
+.admin-access-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-access-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-action-card {
+  padding: 14px;
+  background: rgba(5, 7, 19, 0.42);
+  border: 1px solid rgba(185, 192, 216, 0.16);
+  border-radius: 6px;
+}
+
+.admin-action-title {
+  display: grid;
+  gap: 3px;
+}
+
+.admin-action-title strong {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.admin-action-title span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .table-wrap {
@@ -580,6 +614,7 @@ th {
   .hero-section,
   .about-content,
   .admin-grid,
+  .admin-access-grid,
   .admin-summary {
     grid-template-columns: 1fr;
   }

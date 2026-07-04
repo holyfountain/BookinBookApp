@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260704-admin-add" />
+    <link rel="stylesheet" href="styles.css?v=20260704-admin-simple" />
   </head>
   <body>
     <div class="page-shell">
@@ -142,36 +142,43 @@
             </form>
           </section>
 
-          <section class="admin-panel">
-            <h3>Alterar acesso de administração</h3>
-            <form id="credentialsForm" class="compact-form">
-              <label>
-                Novo email de administração
-                <input id="newAdminUser" type="email" autocomplete="username" required />
-              </label>
-              <label>
-                Nova palavra-passe de administração
-                <input id="newAdminPassword" type="password" autocomplete="new-password" required minlength="6" />
-              </label>
-              <button class="secondary-button" type="submit">Atualizar acesso</button>
-              <p class="form-message" id="credentialsMessage" role="status"></p>
-            </form>
-          </section>
+          <section class="admin-panel admin-access-panel">
+            <h3>Administradores</h3>
+            <div class="admin-access-grid">
+              <form id="credentialsForm" class="compact-form admin-action-card">
+                <div class="admin-action-title">
+                  <strong>O meu acesso</strong>
+                  <span>Atualiza o email ou define uma nova palavra-passe.</span>
+                </div>
+                <label>
+                  Email atual
+                  <input id="newAdminUser" type="email" autocomplete="username" required />
+                </label>
+                <label>
+                  Nova palavra-passe
+                  <input id="newAdminPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Opcional" />
+                </label>
+                <button class="secondary-button" type="submit">Atualizar acesso</button>
+                <p class="form-message" id="credentialsMessage" role="status"></p>
+              </form>
 
-          <section class="admin-panel">
-            <h3>Adicionar administrador</h3>
-            <form id="addAdminForm" class="compact-form">
-              <label>
-                Email do novo administrador
-                <input id="additionalAdminUser" type="email" autocomplete="off" required />
-              </label>
-              <label>
-                Palavra-passe inicial
-                <input id="additionalAdminPassword" type="password" autocomplete="new-password" required minlength="6" />
-              </label>
-              <button class="secondary-button" type="submit">Adicionar Administrador</button>
-              <p class="form-message" id="addAdminMessage" role="status"></p>
-            </form>
+              <form id="addAdminForm" class="compact-form admin-action-card">
+                <div class="admin-action-title">
+                  <strong>Novo administrador</strong>
+                  <span>Cria um acesso separado para outra pessoa.</span>
+                </div>
+                <label>
+                  Email
+                  <input id="additionalAdminUser" type="email" autocomplete="off" required />
+                </label>
+                <label>
+                  Palavra-passe inicial
+                  <input id="additionalAdminPassword" type="password" autocomplete="new-password" required minlength="6" />
+                </label>
+                <button class="secondary-button" type="submit">Adicionar Administrador</button>
+                <p class="form-message" id="addAdminMessage" role="status"></p>
+              </form>
+            </div>
           </section>
         </div>
 
@@ -210,6 +217,6 @@
     </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="module" src="app.js?v=20260704-admin-add"></script>
+    <script type="module" src="app.js?v=20260704-admin-simple"></script>
   </body>
 </html>

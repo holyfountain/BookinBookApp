@@ -123,18 +123,18 @@ Para guardar uma cópia das reservas:
 
 O ficheiro descarregado pode ser aberto em Excel, Google Sheets ou outra folha de cálculo.
 
-## Alterar o acesso de administração
+## Gerir administradores
 
-Na secção **Alterar acesso de administração**, podes atualizar:
+Na secção **Administradores**, podes gerir acessos sem sair do painel.
+
+Em **O meu acesso**, podes atualizar:
 
 - o email de administração;
-- a palavra-passe de administração.
+- a palavra-passe de administração, se preencheres o campo de nova palavra-passe.
 
 Depois de alterar credenciais, guarda a nova informação num local seguro.
 
-## Adicionar administradores
-
-Na secção **Adicionar administrador**, um admin existente pode criar outro acesso de administração com:
+Em **Novo administrador**, um admin existente pode criar outro acesso com:
 
 - email do novo administrador;
 - palavra-passe inicial.

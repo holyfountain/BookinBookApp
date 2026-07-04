@@ -23,7 +23,7 @@ import {
   set,
   update
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-import { emailNotificationConfig, firebaseConfig } from "./config.js?v=20260704-admin-add";
+import { emailNotificationConfig, firebaseConfig } from "./config.js?v=20260704-admin-simple";
 
 const elements = {
   availableCount: document.querySelector("#availableCount"),
@@ -618,6 +618,11 @@ elements.credentialsForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const email = elements.newAdminUser.value.trim();
   const password = elements.newAdminPassword.value;
+
+  if (email === currentUser.email && !password) {
+    setMessage(elements.credentialsMessage, "Não há alterações para guardar.", true);
+    return;
+  }
 
   try {
     if (email && email !== currentUser.email) {
