@@ -203,6 +203,13 @@ h1 {
   text-shadow: 0 0 24px rgba(141, 92, 255, 0.24), 0 3px 22px rgba(0, 0, 0, 0.58);
 }
 
+h1 span {
+  display: block;
+  margin-top: 4px;
+  color: var(--gold);
+  text-shadow: 0 0 24px rgba(215, 166, 82, 0.34), 0 3px 22px rgba(0, 0, 0, 0.62);
+}
+
 h2 {
   font-size: clamp(1.55rem, 2.4vw, 2.15rem);
 }
@@ -266,8 +273,21 @@ h3 {
 }
 
 .reservation-form {
-  align-content: center;
-  padding: 18px;
+  align-content: start;
+  gap: 8px;
+  padding: 14px 18px 20px;
+}
+
+.reservation-form label {
+  gap: 5px;
+}
+
+.reservation-form input {
+  min-height: 34px;
+}
+
+.reservation-form .primary-button {
+  min-height: 40px;
 }
 
 label {
@@ -368,6 +388,13 @@ input:focus {
   margin: 0;
   color: var(--accent-strong);
   font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.reservation-form .form-message {
+  max-width: 100%;
+  min-height: 40px;
+  line-height: 1.35;
 }
 
 .form-message.error {
@@ -416,6 +443,20 @@ input:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
+}
+
+.admin-dialog {
+  width: calc(100vw - 32px);
+  max-width: none;
+  height: calc(100dvh - 32px);
+  max-height: none;
+  overflow: hidden;
+}
+
+.admin-dialog[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
 }
 
 .admin-dialog::backdrop,
@@ -578,6 +619,14 @@ input:focus {
   gap: 18px;
 }
 
+.admin-workspace {
+  min-width: 0;
+  min-height: 0;
+  padding-right: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .admin-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -609,6 +658,7 @@ input:focus {
 }
 
 .admin-panel {
+  min-width: 0;
   padding: 20px;
 }
 
@@ -655,6 +705,7 @@ input:focus {
 
 .table-wrap {
   width: 100%;
+  max-width: 100%;
   margin-top: 14px;
   overflow-x: auto;
 }
