@@ -454,9 +454,20 @@ input:focus {
 }
 
 .admin-dialog[open] {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 18px;
+}
+
+.admin-dialog > .admin-panel:not([hidden]),
+.admin-dialog > .admin-workspace:not([hidden]) {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.admin-dialog > .admin-panel:not([hidden]) {
+  overflow-y: auto;
 }
 
 .admin-dialog::backdrop,
@@ -620,6 +631,7 @@ input:focus {
 }
 
 .admin-workspace {
+  flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
   padding-right: 6px;
@@ -629,27 +641,33 @@ input:focus {
 
 .admin-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  margin-top: 18px;
-  overflow: hidden;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 14px 0 16px;
+  overflow: clip;
 }
 
 .admin-summary div {
   display: grid;
-  gap: 4px;
-  padding: 18px;
+  align-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 114px;
+  padding: 14px;
   background: rgba(5, 7, 19, 0.58);
 }
 
 .admin-summary span {
   color: var(--muted);
+  font-size: 0.96rem;
   font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .admin-summary strong {
   font-family: "Fraunces", Georgia, serif;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 7vw, 2.5rem);
   line-height: 1;
 }
 
@@ -893,6 +911,23 @@ th {
 
   .availability-card strong {
     grid-row: auto;
+  }
+
+  .admin-summary {
+    margin: 12px 0 14px;
+  }
+
+  .admin-summary div {
+    min-height: 94px;
+    padding: 12px 10px;
+  }
+
+  .admin-summary span {
+    font-size: 0.84rem;
+  }
+
+  .admin-summary strong {
+    font-size: 2.05rem;
   }
 
   .batch-item,

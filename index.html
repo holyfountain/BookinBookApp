@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260717-front-updates" />
+    <link rel="stylesheet" href="styles.css?v=20260717-admin-layout" />
   </head>
   <body>
     <div class="page-shell">
@@ -113,24 +113,23 @@
       </section>
 
       <section class="admin-workspace" id="adminWorkspace" hidden>
-        <div class="admin-summary" aria-live="polite">
-          <div>
-            <span>Total de exemplares</span>
-            <strong id="adminTotalBooks">0</strong>
-          </div>
-          <div>
-            <span>Reservados</span>
-            <strong id="adminReservedBooks">0</strong>
-          </div>
-          <div>
-            <span>Disponíveis</span>
-            <strong id="adminAvailableBooks">0</strong>
-          </div>
-        </div>
-
         <div class="admin-grid">
           <section class="admin-panel">
             <h3>Adicionar lote para venda</h3>
+            <div class="admin-summary" aria-live="polite">
+              <div>
+                <span>Total de exemplares</span>
+                <strong id="adminTotalBooks">0</strong>
+              </div>
+              <div>
+                <span>Reservados</span>
+                <strong id="adminReservedBooks">0</strong>
+              </div>
+              <div>
+                <span>Disponíveis</span>
+                <strong id="adminAvailableBooks">0</strong>
+              </div>
+            </div>
             <form id="batchForm" class="compact-form">
               <label>
                 Nome do lote
@@ -196,6 +195,13 @@
 
         <section class="admin-panel table-panel">
           <div class="panel-title-row">
+            <h3>Lotes para venda</h3>
+          </div>
+          <div class="batch-list" id="batchList"></div>
+        </section>
+
+        <section class="admin-panel table-panel">
+          <div class="panel-title-row">
             <h3>Reservas</h3>
             <button class="secondary-button" id="exportButton" type="button">Exportar CSV</button>
           </div>
@@ -215,13 +221,6 @@
               <tbody id="reservationRows"></tbody>
             </table>
           </div>
-        </section>
-
-        <section class="admin-panel table-panel">
-          <div class="panel-title-row">
-            <h3>Lotes para venda</h3>
-          </div>
-          <div class="batch-list" id="batchList"></div>
         </section>
 
         <button class="ghost-button" id="logoutButton" type="button">Terminar sessão</button>
